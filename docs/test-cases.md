@@ -1,19 +1,68 @@
-
 # Test Cases - SauceDemo (Priorizados)
 
-De acuerdo con el análisis del sitio saucedemo.com, se identificaron los siguientes casos de prueba útiles para incluir en el test suite de regresión.
+De acuerdo con el análisis funcional de SauceDemo, se identificaron los siguientes casos de prueba prioritarios para incluir en el test suite de regresión automatizada del proyecto.
 
-| ID   | Feature    | Caso                          | Prioridad | Estado        | Automatizado | Notas |
-|------|-----------|-------------------------------|----------|--------------|-------------|------|
-| TC01 | Auth      | Login exitoso                 | 🔴 Alta   | ⬜ En progreso  | ❌ No        |      |
-| TC02 | Auth      | Login fallido                 | 🔴 Alta   | ⬜ Pendiente  | ❌ No        |      |
-| TC03 | Inventory | Add product from inventory    | 🔴 Alta   | ⬜ Pendiente  | ❌ No        |      |
-| TC04 | Inventory | Remove product from inventory | 🔴 Alta   | ⬜ Pendiente  | ❌ No        |      |
-| TC05 | Cart      | Add product from cart         | 🟠 Media  | ⬜ Pendiente  | ❌ No        |      |
-| TC06 | Cart      | Remove product from cart      | 🟠 Media  | ⬜ Pendiente  | ❌ No        |      |
-| TC11 | Checkout  | Checkout with 1 product       | 🔴 Alta   | ⬜ Pendiente  | ❌ No        |      |
-| TC12 | Checkout  | Checkout with multiple        | 🟠 Media  | ⬜ Pendiente  | ❌ No        |      |
-| TC07 | Inventory | Sort products A-Z             | 🟡 Baja   | ⬜ Pendiente  | ❌ No        |      |
-| TC08 | Inventory | Sort products Z-A             | 🟡 Baja   | ⬜ Pendiente  | ❌ No        |      |
-| TC09 | Inventory | Sort price low-high           | 🟡 Baja   | ⬜ Pendiente  | ❌ No        |      |
-| TC10 | Inventory | Sort price high-low           | 🟡 Baja   | ⬜ Pendiente  | ❌ No        |      |
+## Convenciones
+
+| Símbolo | Significado |
+|---|---|
+| 🔴 | Alta prioridad |
+| 🟠 | Media prioridad |
+| 🟡 | Baja prioridad |
+| ⬜ | Pendiente |
+| 🟨 | En progreso |
+| ✅ | Completado |
+
+---
+
+| ID   | Feature    | Caso de Prueba                              | Prioridad | Estado          | Automatizado | Notas |
+|------|------------|---------------------------------------------|------------|------------------|---------------|------|
+| TC01 | Auth       | Login exitoso con credenciales válidas      | 🔴 Alta    | ✅ Completado     | ✅ Sí          | Implementado usando enfoque parametrizado |
+| TC02 | Auth       | Login con usuario bloqueado                 | 🔴 Alta    | ✅ Completado     | ✅ Sí          | Validación de mensaje de error |
+| TC03 | Auth       | Login con usuario inexistente               | 🔴 Alta    | ✅ Completado     | ✅ Sí          | Validación de credenciales inválidas |
+| TC04 | Auth       | Login sin password                          | 🔴 Alta    | ✅ Completado     | ✅ Sí          | Validación de campo requerido |
+| TC05 | Auth       | Login sin usuario                           | 🔴 Alta    | ✅ Completado     | ✅ Sí          | Validación de campo requerido |
+| TC06 | Inventory  | Adicionar un producto desde inventory       | 🔴 Alta    | ⬜ Pendiente      | ❌ No          |      |
+| TC07 | Inventory  | Remover un producto desde inventory         | 🔴 Alta    | ⬜ Pendiente      | ❌ No          |      |
+| TC08 | Inventory  | Adicionar todos los productos desde inventory | 🔴 Alta  | ⬜ Pendiente      | ❌ No          |      |
+| TC09 | Inventory  | Remover todos los productos desde inventory | 🟠 Media   | ⬜ Pendiente      | ❌ No          |      |
+| TC10 | Cart       | Adicionar un producto desde cart            | 🟠 Media   | ⬜ Pendiente      | ❌ No          |      |
+| TC11 | Cart       | Remover un producto desde cart              | 🟠 Media   | ⬜ Pendiente      | ❌ No          |      |
+| TC12 | Cart       | Adicionar todos los productos desde cart    | 🟠 Media   | ⬜ Pendiente      | ❌ No          |      |
+| TC13 | Cart       | Remover todos los productos desde cart      | 🟠 Media   | ⬜ Pendiente      | ❌ No          |      |
+| TC14 | Checkout   | Checkout exitoso con un producto            | 🔴 Alta    | ⬜ Pendiente      | ❌ No          |      |
+| TC15 | Checkout   | Checkout exitoso con múltiples productos    | 🟠 Media   | ⬜ Pendiente      | ❌ No          |      |
+| TC16 | Inventory  | Organizar productos de A-Z                  | 🟡 Baja    | ⬜ Pendiente      | ❌ No          |      |
+| TC17 | Inventory  | Organizar productos de Z-A                  | 🟡 Baja    | ⬜ Pendiente      | ❌ No          |      |
+| TC18 | Inventory  | Organizar productos por menor precio        | 🟡 Baja    | ⬜ Pendiente      | ❌ No          |      |
+| TC19 | Inventory  | Organizar productos por mayor precio        | 🟡 Baja    | ⬜ Pendiente      | ❌ No          |      |
+
+---
+
+## Cobertura actual
+
+### Funcionalidades automatizadas
+
+- Auth
+  - Login exitoso
+  - Login inválido
+  - Validaciones de credenciales
+  - Validaciones de campos requeridos
+
+### Técnicas implementadas
+
+- Playwright Test Runner
+- Page Object Model (POM)
+- Data-Driven Testing
+- Parametrización de escenarios
+- Screenshots manuales adjuntos al reporte
+- Uso de `test.step()`
+- Assertions modernas de Playwright
+- Uso de locators semánticos (`getByRole`, `getByLabel`, etc.)
+
+---
+
+## Próxima funcionalidad objetivo
+
+```text
+Inventory
