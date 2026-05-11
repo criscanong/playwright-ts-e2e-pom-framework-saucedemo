@@ -43,12 +43,12 @@ test.describe('Auth - Login', () => {
 
         await test.step('Validar error', async () => {
             await expect(loginPage.errorBanner).toBeVisible();
-            await expect(loginPage.errorBanner).toContainText(user.message!)
+            await expect(loginPage.errorBanner).toContainText(user.message!);
             await takeScreenshot(page, 'error-visible');
-        }); 
+        });
     });
 
-        test('TC03 - Login fallido usuario inexistente', async ({ page }) => {
+    test('TC03 - Login fallido usuario inexistente', async ({ page }) => {
         const loginPage = new LoginPage(page);
         const user = users.not_existent;
 
@@ -57,18 +57,18 @@ test.describe('Auth - Login', () => {
             await takeScreenshot(page, 'login-page');
         });
 
-        await test.step('Intentar login con usuario bloqueado', async () => {
+        await test.step('Intentar login con usuario inexistente', async () => {
             await loginPage.login(user.username, user.password);
         });
 
         await test.step('Validar error', async () => {
             await expect(loginPage.errorBanner).toBeVisible();
-            await expect(loginPage.errorBanner).toContainText(user.message!)
+            await expect(loginPage.errorBanner).toContainText(user.message!);
             await takeScreenshot(page, 'error-visible');
-        }); 
+        });
     });
 
-        test('TC04 - Login fallido sin password', async ({ page }) => {
+    test('TC04 - Login fallido sin password', async ({ page }) => {
         const loginPage = new LoginPage(page);
         const user = users.no_password;
 
@@ -77,18 +77,18 @@ test.describe('Auth - Login', () => {
             await takeScreenshot(page, 'login-page');
         });
 
-        await test.step('Intentar login con usuario bloqueado', async () => {
+        await test.step('Intentar login sin password', async () => {
             await loginPage.login(user.username, user.password);
         });
 
         await test.step('Validar error', async () => {
             await expect(loginPage.errorBanner).toBeVisible();
-            await expect(loginPage.errorBanner).toContainText(user.message!)
+            await expect(loginPage.errorBanner).toContainText(user.message!);
             await takeScreenshot(page, 'error-visible');
-        }); 
+        });
     });
 
-        test('TC05 - Login fallido sin usuario', async ({ page }) => {
+    test('TC05 - Login fallido sin usuario', async ({ page }) => {
         const loginPage = new LoginPage(page);
         const user = users.no_user;
 
@@ -97,14 +97,14 @@ test.describe('Auth - Login', () => {
             await takeScreenshot(page, 'login-page');
         });
 
-        await test.step('Intentar login con usuario bloqueado', async () => {
+        await test.step('Intentar login sin usuario', async () => {
             await loginPage.login(user.username, user.password);
         });
 
         await test.step('Validar error', async () => {
             await expect(loginPage.errorBanner).toBeVisible();
-            await expect(loginPage.errorBanner).toContainText(user.message!)
+            await expect(loginPage.errorBanner).toContainText(user.message!);
             await takeScreenshot(page, 'error-visible');
-        }); 
+        });
     });
 });
