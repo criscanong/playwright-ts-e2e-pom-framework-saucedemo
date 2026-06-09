@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { InventoryProduct } from '../types/InventoryProduct';
 
 export class InventoryPage {
     readonly page: Page;
@@ -23,6 +24,11 @@ export class InventoryPage {
      */
     async getRandomProductIndex(): Promise<number> {
         const count = await this.getInventoryItemsCount();
+
+        if (count === 0) {
+            throw new Error('No inventory products available.');
+        }
+
         return Math.floor(Math.random() * count);
     }
 
@@ -34,14 +40,28 @@ export class InventoryPage {
     }
 
     /**
+     * Returns product name from product locator
+     */
+    async getProductName(productCard: Locator): Promise<string> {
+        return await productCard.locator('.inventory_item_name').textContent() ?? '';
+    }
+
+    /**
+     * adds a product to cart by locator
+     */
+    async addProductToCart(productCard: Locator): Promise<void> {
+        await productCard.getByRole('button', { name: 'Add to cart'}).click();
+    }
+
+    /**
      * Adds random product to cart.
      * Returns selected product name for future validations.
      */
-    async addRandomProductToCart(): Promise<{ productName: string; productCard: Locator; }> {
+    async addRandomProductToCart(): Promise<InventoryProduct> {
         const randomIndex = await this.getRandomProductIndex();
         const productCard = this.getInventoryItemByIndex(randomIndex);
-        const productName = await productCard.locator('.inventory_item_name').textContent() ?? '';
-        await productCard.getByRole('button', { name: 'Add to cart' }).click();
+        const productName = await this.getProductName(productCard);
+        await this.addProductToCart(productCard);
         return { productName, productCard };
     }
 
@@ -57,7 +77,31 @@ export class InventoryPage {
     /**
      * Removes product from cart by locator.
      */
-    async removeProductFromCart(productCard: Locator) {
+    async removeProductFromCart(productCard: Locator): Promise<void> {
         await productCard.getByRole('button', { name: 'Remove' }).click();
+    }
+
+    /**
+     * Adds all inventory products to cart.
+     * Returns added products for future validations.
+     */
+    async addAllProductsToCart(): Promise<InventoryProduct[]> {
+
+        const products: InventoryProduct[] = [];
+
+        const inventoryItemsCount = await this.getInventoryItemsCount();
+
+        for (let i = 0; i < inventoryItemsCount; i++) {
+
+            const productCard = this.getInventoryItemByIndex(i);
+            const productName = await this.getProductName(productCard);
+            await this.addProductToCart(productCard);
+
+            products.push({
+                productName,
+                productCard
+            });
+        }
+        return products;
     }
 }
