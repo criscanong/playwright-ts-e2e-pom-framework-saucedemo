@@ -26,8 +26,8 @@ De acuerdo con el análisis funcional de SauceDemo, se identificaron los siguien
 | TC07 | Inventory | Remover un producto desde inventory           | 🔴 Alta   | ✅ Completado | ✅ Sí         | Validación de remoción y actualización del carrito |
 | TC08 | Inventory | Adicionar todos los productos desde inventory | 🔴 Alta   | ✅ Completado | ✅ Sí         | Validación masiva de adición y cart badge          |
 | TC09 | Inventory | Remover todos los productos desde inventory   | 🟠 Media  | ✅ Completado | ✅ Sí         | Validación masiva de remoción y carrito vacío      |
-| TC10 | Cart      | Visualizar producto agregado en carrito       | 🔴 Alta   | ⬜ Pendiente  | ❌ No         | Validación de datos del producto en cart           |
-| TC11 | Cart      | Remover producto desde carrito                | 🔴 Alta   | ⬜ Pendiente  | ❌ No         | Validación de remoción desde cart                  |
+| TC10 | Cart      | Visualizar producto agregado en carrito       | 🔴 Alta   | ✅ Completado  | ❌ No         | Validación de datos del producto en cart           |
+| TC11 | Cart      | Remover producto desde carrito                | 🔴 Alta   | ✅ Completado  | ❌ No         | Validación de remoción desde cart                  |
 | TC12 | Cart      | Visualizar múltiples productos en carrito     | 🟠 Media  | ⬜ Pendiente  | ❌ No         | Validación de consistencia de productos            |
 | TC13 | Cart      | Remover múltiples productos desde carrito     | 🟠 Media  | ⬜ Pendiente  | ❌ No         | Validación de carrito vacío                        |
 | TC14 | Checkout  | Checkout exitoso con un producto              | 🔴 Alta   | ⬜ Pendiente  | ❌ No         | Flujo completo de compra                           |

@@ -1,15 +1,16 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 import { InventoryProduct } from '../types/InventoryProduct';
+import { HeaderComponent } from '../components/HeaderComponent';
 
 export class InventoryPage {
     readonly page: Page;
+    readonly header: HeaderComponent;
     readonly inventoryItems: Locator;
-    readonly cartBadgeIcon: Locator;
 
     constructor(page: Page) {
         this.page = page;
+        this.header = new HeaderComponent(page);
         this.inventoryItems = page.locator('.inventory_item');
-        this.cartBadgeIcon = page.locator('.shopping_cart_badge');
     }
 
     /**
@@ -47,6 +48,20 @@ export class InventoryPage {
     }
 
     /**
+     * Returns product description from product locator
+     */
+    async getProductDescription(productCard: Locator): Promise<string> {
+        return await productCard.locator('.inventory_item_desc').textContent() ?? '';
+    }
+
+    /**
+     * Returns product price from product locator
+     */
+    async getProductPrice(productCard: Locator): Promise<string> {
+        return await productCard.locator('.inventory_item_price').textContent() ?? '';
+    }
+
+    /**
      * adds a product to cart by locator
      */
     async addProductToCart(productCard: Locator): Promise<void> {
@@ -61,17 +76,10 @@ export class InventoryPage {
         const randomIndex = await this.getRandomProductIndex();
         const productCard = this.getInventoryItemByIndex(randomIndex);
         const productName = await this.getProductName(productCard);
+        const productDescription = await this.getProductDescription(productCard);
+        const productPrice = await this.getProductPrice(productCard);
         await this.addProductToCart(productCard);
-        return { productName, productCard };
-    }
-
-    /**
-     * Returns current cart badge count.
-     */
-    async getCartBadgeCount(): Promise<string> {
-        await expect(this.cartBadgeIcon).toBeVisible();
-        const cartBadgeCount = await this.cartBadgeIcon.textContent();
-        return cartBadgeCount ?? '0';
+        return { productCard, productName, productDescription, productPrice };
     }
 
     /**
@@ -95,11 +103,15 @@ export class InventoryPage {
 
             const productCard = this.getInventoryItemByIndex(i);
             const productName = await this.getProductName(productCard);
+            const productDescription = await this.getProductDescription(productCard);
+            const productPrice = await this.getProductPrice(productCard);
             await this.addProductToCart(productCard);
 
             products.push({
                 productName,
-                productCard
+                productCard, 
+                productDescription,
+                productPrice
             });
         }
         return products;

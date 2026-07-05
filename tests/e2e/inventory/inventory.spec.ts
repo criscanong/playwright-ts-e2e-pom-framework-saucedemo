@@ -29,7 +29,7 @@ test.describe("Inventory", () => {
         });
 
         await test.step("Validate cart badge count", async () => {
-            expect(await inventoryPage.getCartBadgeCount()).toBe("1");
+            expect(await inventoryPage.header.getCartBadgeCount()).toBe("1");
             await takeScreenshot(page, "cart-badge-validation");
         });
 
@@ -58,7 +58,7 @@ test.describe("Inventory", () => {
         await test.step("Add random product to cart", async () => {
             selectedProduct = await inventoryPage.addRandomProductToCart();
             await expect(selectedProduct.productCard.getByRole("button", { name: "Remove" })).toBeVisible();
-            await expect(inventoryPage.cartBadgeIcon).toHaveText("1");
+            await expect(inventoryPage.header.cartBadgeIcon).toHaveText("1");
             await takeScreenshot(page, "random-product-added");
         });
 
@@ -69,7 +69,7 @@ test.describe("Inventory", () => {
 
         await test.step("Validate product was removed", async () => {
             await expect(selectedProduct.productCard.getByRole("button", {name: "Add to cart"})).toBeVisible();
-            await expect(inventoryPage.cartBadgeIcon).not.toBeVisible();
+            await expect(inventoryPage.header.cartBadgeIcon).not.toBeVisible();
             await takeScreenshot(page, "product-removal-validation");
         });
     });
@@ -99,7 +99,7 @@ test.describe("Inventory", () => {
         });
 
         await test.step("Validate cart badge count", async () => {
-            expect(await inventoryPage.getCartBadgeCount()).toBe(expectedProductsCount.toString());
+            expect(await inventoryPage.header.getCartBadgeCount()).toBe(expectedProductsCount.toString());
             await takeScreenshot(page, "cart-badge-validation");
         });
 
@@ -136,7 +136,7 @@ test.describe("Inventory", () => {
         });
 
         await test.step("Validate cart badge count", async () => {
-            expect(await inventoryPage.getCartBadgeCount()).toBe((expectedProductsCount).toString());
+            expect(await inventoryPage.header.getCartBadgeCount()).toBe((expectedProductsCount).toString());
             await takeScreenshot(page, "cart-badge-validation");
         });
 
@@ -158,7 +158,7 @@ test.describe("Inventory", () => {
             for (const product of products) {
                 await expect(product.productCard.getByRole("button", {name: "Add to cart"})).toBeVisible();
             }
-            await expect(inventoryPage.cartBadgeIcon).not.toBeVisible();
+            await expect(inventoryPage.header.cartBadgeIcon).not.toBeVisible();
             await takeScreenshot(page, "products-removal-validation");
         });
     });

@@ -1,6 +1,8 @@
 import { Locator } from '@playwright/test';
 
 export type InventoryProduct = {
-    productName: string;
     productCard: Locator;
+    productName: string;
+    productDescription: string;
+    productPrice: string
 };
