@@ -39,10 +39,11 @@ export class CartPage {
      */
     async getProductInCartByName(selectedProductName: string): Promise<InventoryProduct> {
         const productCard = this.cartItems.filter({ hasText: selectedProductName });
+        await expect(productCard).toBeVisible();
         const productName = await this.getProductName(productCard);
         const productDescription = await this.getProductDescription(productCard);
         const productPrice = await this.getProductPrice(productCard);
-        return { productCard, productName, productDescription, productPrice }
+        return { productCard, productName, productDescription, productPrice };
     }
 
     /**

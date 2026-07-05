@@ -1,48 +1,122 @@
 # Playwright TS E2E Framework - SauceDemo
 
-End-to-end test automation framework built with Playwright and TypeScript, applying Page Object Model (POM), scalable architecture, and industry best practices.
+<p align="center">
+
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright\&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript\&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=node.js\&logoColor=white)
+![Tests](https://img.shields.io/badge/Automated%20Tests-13%2F19-success)
+![Coverage](https://img.shields.io/badge/Regression%20Coverage-68.4%25-blue)
+![Architecture](https://img.shields.io/badge/Architecture-POM%20%7C%20Component%20Model-orange)
+![Status](https://img.shields.io/badge/Status-In%20Progress-yellow)
+
+</p>
+
+End-to-end UI automation framework built with **Playwright** and **TypeScript**, following modern automation architecture and enterprise-level best practices.
 
 ---
 
-## 🚀 Overview
+# 🚀 Overview
 
-This project demonstrates a **real-world automation framework** for UI testing using modern tooling and design patterns.
-It focuses on maintainability, readability, and scalability — aligned with how automation is implemented in professional environments.
+This project demonstrates how to build a **scalable, maintainable, and reusable UI automation framework** using Playwright.
+
+Rather than focusing only on automating test cases, the project emphasizes clean architecture, reusable business components, and automation practices commonly adopted in enterprise environments.
+
+The application under test is **SauceDemo**, which provides an excellent playground for implementing authentication, inventory management, shopping cart, and checkout flows.
 
 ---
 
-## 🧠 Tech Stack
+# ⭐ Framework Highlights
 
-* Playwright (E2E testing framework)
+* ✅ Playwright + TypeScript
+* ✅ Page Object Model (POM)
+* ✅ Component Object Model
+* ✅ Feature-based project organization
+* ✅ Strongly typed domain models
+* ✅ Reusable business methods
+* ✅ Semantic locators
+* ✅ Scoped locators
+* ✅ Dynamic locator strategies
+* ✅ Randomized test execution
+* ✅ Bulk operation support
+* ✅ Business-oriented test design
+* ✅ Rich HTML reports
+* ✅ Screenshot capture
+* ✅ Ready for CI/CD integration
+
+---
+
+# 🧠 Tech Stack
+
+* Playwright
 * TypeScript
 * Node.js
+* npm
 
 ---
 
-## 🧱 Architecture & Design Patterns
+# 🏛 Architecture
 
-### ✔ Page Object Model (POM)
+The framework follows a layered architecture that separates responsibilities and encourages code reuse.
 
-Encapsulates UI elements and actions to promote reuse and maintainability.
+## Page Object Model (POM)
 
-### ✔ Feature-based structure
+Each page encapsulates:
 
-Tests are organized by business functionality rather than technical layers.
+* Locators
+* Business actions
+* Business queries
 
-### ✔ Test isolation
+Examples:
 
-Each test is independent and can run in parallel.
-
-### ✔ Data-driven approach (ready)
-
-Test data is centralized and reusable.
+* LoginPage
+* InventoryPage
+* CartPage
+* CheckoutPage
 
 ---
 
-## 📁 Project Structure
+## Component Object Model
 
-```
+Reusable UI components shared across pages.
+
+Current implementation:
+
+* HeaderComponent
+
+This avoids duplicating common functionality such as navigating to the shopping cart or validating the cart badge.
+
+---
+
+## Domain Models
+
+Business entities are represented through reusable TypeScript types.
+
+Current model:
+
+* InventoryProduct
+
+This allows methods to exchange meaningful business objects instead of isolated primitive values.
+
+---
+
+# 📁 Project Structure
+
+```text
 project/
+│
+├── docs/
+│   └── test-cases.md
+│
+├── pages/
+│   ├── components/
+│   │   └── HeaderComponent.ts
+│   │
+│   ├── LoginPage.ts
+│   ├── InventoryPage.ts
+│   ├── CartPage.ts
+│   └── CheckoutPage.ts
+│
 ├── tests/
 │   └── e2e/
 │       ├── auth/
@@ -50,17 +124,12 @@ project/
 │       ├── cart/
 │       └── checkout/
 │
-├── pages/
-│   ├── LoginPage.ts
-│   ├── InventoryPage.ts
-│   ├── CartPage.ts
-│   └── CheckoutPage.ts
+├── types/
+│   └── InventoryProduct.ts
 │
 ├── utils/
+│   ├── screenshot.ts
 │   └── test-data.ts
-│
-├── docs/
-│   └── test-cases.md
 │
 ├── playwright.config.ts
 ├── package.json
@@ -69,151 +138,269 @@ project/
 
 ---
 
-## 🧪 Test Coverage (Regression Suite)
+# 🧪 Regression Suite Coverage
 
-### 🔐 Authentication
+## Authentication
 
-* Successful login
-* Failed login
-
-### 🛒 Cart
-
-* Add/remove product from inventory
-* Add/remove product from cart
-
-### 📦 Inventory
-
-* Product sorting (A-Z, Z-A, price)
-
-### 💳 Checkout
-
-* Purchase with single product
-* Purchase with multiple products
+| Test Case        | Status |
+| ---------------- | ------ |
+| Successful login | ✅      |
+| Locked user      | ✅      |
+| Invalid user     | ✅      |
+| Missing username | ✅      |
+| Missing password | ✅      |
 
 ---
 
-## 📊 Test Management
+## Inventory
 
-Test cases are documented in:
-
-```
-docs/test-cases.md
-```
-
-Including:
-
-* Feature mapping
-* Priority
-* Execution status
-* Automation status
+| Test Case             | Status |
+| --------------------- | ------ |
+| Add random product    | ✅      |
+| Remove random product | ✅      |
+| Add all products      | ✅      |
+| Remove all products   | ✅      |
+| Sort A-Z              | ⏳      |
+| Sort Z-A              | ⏳      |
+| Sort Low to High      | ⏳      |
+| Sort High to Low      | ⏳      |
 
 ---
 
-## ⚙️ Setup
+## Cart
 
-### 1. Install dependencies
+| Test Case                | Status |
+| ------------------------ | ------ |
+| View added product       | ✅      |
+| Remove product           | ✅      |
+| View multiple products   | ✅      |
+| Remove multiple products | ✅      |
 
+---
+
+## Checkout
+
+| Test Case                       | Status |
+| ------------------------------- | ------ |
+| Checkout with one product       | ⏳      |
+| Checkout with multiple products | ⏳      |
+
+---
+
+# 📊 Current Progress
+
+| Metric             | Value |
+| ------------------ | ----: |
+| Planned Test Cases |    19 |
+| Automated          |    13 |
+| Progress           | 68.4% |
+
+---
+
+# ✅ Automation Techniques Implemented
+
+* Page Object Model
+* Component Object Model
+* Strong typing with TypeScript
+* Business object modeling
+* Reusable business methods
+* Dynamic locators
+* Scoped locators
+* Semantic locators
+* Data-driven approach
+* Randomized test execution
+* Bulk operations
+* Assertions with Playwright
+* `test.step()` organization
+* Manual screenshots
+* Business-oriented validations
+
+---
+
+# 📸 Reporting
+
+The framework generates Playwright HTML reports.
+
+Run:
+
+```bash
+npx playwright show-report
 ```
+
+Reports include:
+
+* Test execution summary
+* Execution time
+* Failure details
+* Stack traces
+* Attached screenshots
+
+---
+
+# ⚙️ Setup
+
+## Install dependencies
+
+```bash
 npm install
 ```
 
-### 2. Install Playwright browsers
+---
 
-```
+## Install browsers
+
+```bash
 npx playwright install
 ```
 
 ---
 
-## ▶️ Running Tests
+# ▶️ Running Tests
 
-### Run all tests
+## Execute all tests
 
-```
+```bash
 npx playwright test
 ```
 
-### Run with UI mode (recommended for debugging)
+---
 
+## Execute a specific feature
+
+```bash
+npx playwright test tests/e2e/inventory
 ```
+
+---
+
+## Execute a specific test
+
+```bash
+npx playwright test -g "TC08"
+```
+
+or
+
+```bash
+npx playwright test -g "Add all products"
+```
+
+---
+
+## Execute in UI Mode
+
+```bash
 npx playwright test --ui
 ```
 
-### Run specific test
+---
 
-```
-npx playwright test -g "Login"
+## Execute in headed mode
+
+```bash
+npx playwright test --headed
 ```
 
 ---
 
-## 📸 Reporting
+## Debug a test
 
-After execution:
-
+```bash
+npx playwright test --debug
 ```
-npx playwright show-report
-```
-
-Includes:
-
-* Test results
-* Screenshots on failure
-* Execution traces
 
 ---
 
-## 🧠 Best Practices Applied
+# 📚 Test Documentation
 
-* No hardcoded waits (`waitForTimeout`)
-* Use of semantic locators (`getByRole`, `getByText`)
-* Clean separation of concerns
-* Reusable page objects
-* Clear test naming aligned with business intent
-* Minimal duplication
+Business test cases are documented in:
+
+```text
+docs/test-cases.md
+```
+
+Including:
+
+* Functional area
+* Priority
+* Execution status
+* Automation status
+* Notes
 
 ---
 
-## ⚠️ Anti-Patterns Avoided
+# ✅ Best Practices Applied
 
-* Tests calling other tests
-* Fragile CSS/XPath selectors
+* No hardcoded waits
+* Explicit business methods
+* Separation of actions and validations
+* Minimal code duplication
+* Reusable components
+* Strong typing
+* Clear naming conventions
+* Semantic locators
+* Dynamic locator strategies
+* Business-oriented test scenarios
+* Independent tests
+* Parallel execution ready
+
+---
+
+# 🚫 Anti-Patterns Avoided
+
+* XPath abuse
+* Fragile selectors
+* Static waits (`waitForTimeout`)
+* Test dependencies
 * Logic inside test cases
-* Hardcoded data scattered across tests
+* Duplicated locators
+* Hardcoded test data
+* Shared mutable state
 
 ---
 
-## 🏢 Real-World Alignment
+# 🏢 Enterprise Alignment
 
-This project simulates how automation is implemented in enterprise environments:
+This project follows practices commonly found in enterprise automation frameworks:
 
-* Scalable folder structure
-* Clear test strategy
-* Maintainable codebase
-* Ready for CI/CD integration
+* Layered architecture
+* Separation of concerns
+* Business abstraction
+* Reusable components
+* Typed domain models
+* Maintainable Page Objects
+* Scalable project organization
+* CI/CD ready structure
 
 ---
 
-## 🚀 Future Improvements
+# 🚀 Roadmap
 
+Upcoming improvements include:
+
+* Checkout automation
+* Inventory sorting validation
+* Custom Playwright fixtures
 * API testing integration
-* CI/CD pipeline (GitHub Actions / Azure DevOps)
-* Environment configuration (dev/qa/prod)
-* Custom fixtures
-* Advanced reporting
+* Environment configuration
+* GitHub Actions pipeline
+* Azure DevOps pipeline
+* Docker execution
+* Cross-browser pipeline
+* Parallel execution optimization
+* Code coverage metrics
+* Allure reporting
+* Test tagging strategy
+* Smoke and Regression suites
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
-Automation Engineer focused on building scalable and maintainable test frameworks.
+Automation Engineer focused on building scalable, maintainable, and enterprise-ready test automation frameworks using modern testing tools and software engineering best practices.
 
 ---
 
-## 📌 Notes
+# 📄 License
 
-This project is intended for:
-
-* Learning advanced Playwright usage
-* Demonstrating professional automation practices
-* Portfolio and technical interviews
+This project is intended for educational purposes, portfolio demonstrations, and technical interview discussions.
