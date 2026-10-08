@@ -1,16 +1,19 @@
 import { Page, Locator } from '@playwright/test';
 import { InventoryProduct } from '../types/InventoryProduct';
 import { HeaderComponent } from '../components/HeaderComponent';
+import { parsePriceLabel } from '../utils/parsers';
 
 export class InventoryPage {
     readonly page: Page;
     readonly header: HeaderComponent;
     readonly inventoryItems: Locator;
+    readonly sortDropdown: Locator;
 
     constructor(page: Page) {
         this.page = page;
         this.header = new HeaderComponent(page);
         this.inventoryItems = page.locator('.inventory_item');
+        this.sortDropdown = page.locator('.product_sort_container');
     }
 
     /**
@@ -57,8 +60,9 @@ export class InventoryPage {
     /**
      * Returns product price from product locator
      */
-    async getProductPrice(productCard: Locator): Promise<string> {
-        return await productCard.locator('.inventory_item_price').textContent() ?? '';
+    async getProductPrice(productCard: Locator): Promise<number> {
+        const text = await productCard.locator('.inventory_item_price').textContent() ?? '';
+        return parsePriceLabel(text);
     }
 
     /**
@@ -115,5 +119,27 @@ export class InventoryPage {
             });
         }
         return products;
+    }
+
+    /**
+     * Selects a sort option from the sort dropdown.
+     */
+    async selectSortOption(option: 'az' | 'za' | 'lohi' | 'hilo'): Promise<void> {
+        await this.sortDropdown.selectOption( option );
+    }
+
+    /**
+     * Returns all product names in the current sort order.
+     */
+    async getProductNames(): Promise<string[]> {
+        return await this.inventoryItems.locator('.inventory_item_name').allTextContents();
+    }
+
+    /**
+     * Returns all product prices in the current sort order.
+     */
+    async getProductPrices(): Promise <number[]> {
+        const priceLabels = await this.inventoryItems.locator('.inventory_item_price').allTextContents();
+        return priceLabels.map(parsePriceLabel);
     }
 }
