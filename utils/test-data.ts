@@ -36,3 +36,11 @@ export const users: Record<string, LoginScenario> = {
     message: 'Username is required',
   }
 };
+
+export const customer = {
+  standard: {
+    firstName: 'John',
+    lastName: 'Doe',
+    zip: '10001'
+  }
+};
