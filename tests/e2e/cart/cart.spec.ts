@@ -1,31 +1,12 @@
-import { test, expect } from "@playwright/test";
-import { LoginPage } from "../../../pages/LoginPage";
-import { InventoryPage } from "../../../pages/InventoryPage";
-import { CartPage } from "../../../pages/CartPage";
-import { users } from "../../../utils/test-data";
+import { test, expect } from "../../fixtures/pages.fixture";
 import { takeScreenshot } from "../../../utils/screenshot";
 import { InventoryProduct } from "../../../types/InventoryProduct";
 
 test.describe("Cart", () => {
 
-    test("TC10 - View added product in cart", async ({ page }) => {
-
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-        const cartPage = new CartPage(page);
+    test("TC10 - View added product in cart", async ({ page, inventoryPage, cartPage }) => {
         let selectedProduct: InventoryProduct;
         let productInCart: InventoryProduct;
-
-        await test.step("Navigate to login page", async () => {
-            await loginPage.goto();
-            await takeScreenshot(page, "login-page");
-        });
-
-        await test.step("Login with standard user", async () => {
-            await loginPage.login(users.standard.username, users.standard.password);
-            await expect(page).toHaveURL(/inventory/);
-            await takeScreenshot(page, "inventory-after-login");
-        });
 
         await test.step("Add random product to cart", async () => {
             selectedProduct = await inventoryPage.addRandomProductToCart();
@@ -38,7 +19,7 @@ test.describe("Cart", () => {
         });
 
         await test.step("Validate product in cart is product added before", async () => {
-            productInCart = await cartPage.getProductInCartByName(selectedProduct.productName);
+            productInCart = await cartPage.getProductByName(selectedProduct.productName);
             expect(productInCart.productName).toBe(selectedProduct.productName);
             expect(productInCart.productDescription).toBe(selectedProduct.productDescription);
             expect(productInCart.productPrice).toBe(selectedProduct.productPrice);
@@ -47,24 +28,9 @@ test.describe("Cart", () => {
         });
     })
 
-    test("TC11 - Remove product from cart", async ({ page }) => {
-
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-        const cartPage = new CartPage(page);
+    test("TC11 - Remove product from cart", async ({ page, inventoryPage, cartPage }) => {
         let selectedProduct: InventoryProduct;
         let productInCart: InventoryProduct;
-
-        await test.step("Navigate to login page", async () => {
-            await loginPage.goto();
-            await takeScreenshot(page, "login-page");
-        });
-
-        await test.step("Login with standard user", async () => {
-            await loginPage.login(users.standard.username, users.standard.password);
-            await expect(page).toHaveURL(/inventory/);
-            await takeScreenshot(page, "inventory-after-login");
-        });
 
         await test.step("Add random product to cart", async () => {
             selectedProduct = await inventoryPage.addRandomProductToCart();
@@ -77,13 +43,13 @@ test.describe("Cart", () => {
         });
 
         await test.step("Locate added product in cart", async () => {
-            productInCart = await cartPage.getProductInCartByName(selectedProduct.productName);
+            productInCart = await cartPage.getProductByName(selectedProduct.productName);
             await expect(productInCart.productCard.getByRole("button", { name: "Remove" })).toBeVisible();
             await takeScreenshot(page, "product-visible-in-cart");
         });
 
         await test.step("Remove product from cart", async () => {
-            await cartPage.removeProductFromCart(productInCart.productCard);
+            await cartPage.removeProduct(productInCart.productCard);
             await takeScreenshot(page, "product-was-removed");
         });
 
@@ -94,23 +60,8 @@ test.describe("Cart", () => {
         });
     })
 
-    test("TC12 - View all added products in cart", async ({ page }) => {
-
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-        const cartPage = new CartPage(page);
+    test("TC12 - View all added products in cart", async ({ page, inventoryPage, cartPage }) => {
         let selectedProducts: InventoryProduct[];
-
-        await test.step("Navigate to login page", async () => {
-            await loginPage.goto();
-            await takeScreenshot(page, "login-page");
-        });
-
-        await test.step("Login with standard user", async () => {
-            await loginPage.login(users.standard.username, users.standard.password);
-            await expect(page).toHaveURL(/inventory/);
-            await takeScreenshot(page, "inventory-after-login");
-        });
 
         await test.step("Add all products to cart from inventory", async () => {
             selectedProducts = await inventoryPage.addAllProductsToCart();
@@ -124,7 +75,7 @@ test.describe("Cart", () => {
 
         await test.step("Validate all added products are displayed in cart", async () => {
             for (const selectedProduct of selectedProducts) {
-                const productInCart = await cartPage.getProductInCartByName(selectedProduct.productName);
+                const productInCart = await cartPage.getProductByName(selectedProduct.productName);
                 expect(productInCart.productName).toBe(selectedProduct.productName);
                 expect(productInCart.productDescription).toBe(selectedProduct.productDescription);
                 expect(productInCart.productPrice).toBe(selectedProduct.productPrice);
@@ -134,23 +85,8 @@ test.describe("Cart", () => {
         });
     })
 
-    test("TC13 - Remove all products from cart", async ({ page }) => {
-
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-        const cartPage = new CartPage(page);
+    test("TC13 - Remove all products from cart", async ({ page, inventoryPage, cartPage }) => {
         let selectedProducts: InventoryProduct[];
-
-        await test.step("Navigate to login page", async () => {
-            await loginPage.goto();
-            await takeScreenshot(page, "login-page");
-        });
-
-        await test.step("Login with standard user", async () => {
-            await loginPage.login(users.standard.username, users.standard.password);
-            await expect(page).toHaveURL(/inventory/);
-            await takeScreenshot(page, "inventory-after-login");
-        });
 
         await test.step("Add all products to cart from inventory", async () => {
             selectedProducts = await inventoryPage.addAllProductsToCart();
@@ -164,9 +100,9 @@ test.describe("Cart", () => {
 
         await test.step("Remove all products from cart", async () => {
             for (const selectedProduct of selectedProducts) {
-                const productInCart = await cartPage.getProductInCartByName(selectedProduct.productName);
+                const productInCart = await cartPage.getProductByName(selectedProduct.productName);
                 await expect(productInCart.productCard.getByRole("button", { name: "Remove" })).toBeVisible();
-                await cartPage.removeProductFromCart(productInCart.productCard);
+                await cartPage.removeProduct(productInCart.productCard);
                 await expect(productInCart.productCard).not.toBeVisible();
             }
             await takeScreenshot(page, "products-were-removed");

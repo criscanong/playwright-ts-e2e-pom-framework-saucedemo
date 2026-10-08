@@ -1,27 +1,11 @@
-import { test, expect } from "@playwright/test";
-import { LoginPage } from "../../../pages/LoginPage";
-import { InventoryPage } from "../../../pages/InventoryPage";
-import { users } from "../../../utils/test-data";
+import { test, expect } from "../../fixtures/pages.fixture";
 import { takeScreenshot } from "../../../utils/screenshot";
 import { InventoryProduct } from "../../../types/InventoryProduct";
 
 test.describe("Inventory", () => {
 
-    test("TC06 - Add random product from inventory", async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
+    test("TC06 - Add random product from inventory", async ({ page, inventoryPage }) => {
         let selectedProduct: InventoryProduct;
-
-        await test.step("Navigate to login page", async () => {
-            await loginPage.goto();
-            await takeScreenshot(page, "login-page");
-        });
-
-        await test.step("Login with standard user", async () => {
-            await loginPage.login(users.standard.username, users.standard.password);
-            await expect(page).toHaveURL(/inventory/);
-            await takeScreenshot(page, "inventory-after-login");
-        });
 
         await test.step("Add random product to cart", async () => {
             selectedProduct = await inventoryPage.addRandomProductToCart();
@@ -39,21 +23,8 @@ test.describe("Inventory", () => {
         });
     });
 
-    test("TC07 - Remove random product from inventory", async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
+    test("TC07 - Remove random product from inventory", async ({ page, inventoryPage }) => {
         let selectedProduct: InventoryProduct;
-
-        await test.step("Navigate to login page", async () => {
-            await loginPage.goto();
-            await takeScreenshot(page, "login-page");
-        });
-
-        await test.step("Login with standard user", async () => {
-            await loginPage.login(users.standard.username, users.standard.password);
-            await expect(page).toHaveURL(/inventory/);
-            await takeScreenshot(page, "inventory-after-login");
-        });
 
         await test.step("Add random product to cart", async () => {
             selectedProduct = await inventoryPage.addRandomProductToCart();
@@ -74,23 +45,9 @@ test.describe("Inventory", () => {
         });
     });
 
-    test("TC08 - Add all products from inventory", async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-
+    test("TC08 - Add all products from inventory", async ({ page, inventoryPage }) => {
         let products: InventoryProduct[];
         let expectedProductsCount: number;
-
-        await test.step("Navigate to login page", async () => {
-            await loginPage.goto();
-            await takeScreenshot(page, "login-page");
-        });
-
-        await test.step("Login with standard user", async () => {
-            await loginPage.login(users.standard.username, users.standard.password);
-            await expect(page).toHaveURL(/inventory/);
-            await takeScreenshot(page, "inventory-after-login");
-        });
 
         await test.step("Add all products to cart from inventory", async () => {
             expectedProductsCount = await inventoryPage.getInventoryItemsCount();
@@ -111,23 +68,9 @@ test.describe("Inventory", () => {
         });
     });
 
-    test("TC09 - Remove all products from inventory", async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-
+    test("TC09 - Remove all products from inventory", async ({ page, inventoryPage }) => {
         let products: InventoryProduct[];
         let expectedProductsCount: number;
-
-        await test.step("Navigate to login page", async () => {
-            await loginPage.goto();
-            await takeScreenshot(page, "login-page");
-        });
-
-        await test.step("Login with standard user", async () => {
-            await loginPage.login(users.standard.username, users.standard.password);
-            await expect(page).toHaveURL(/inventory/);
-            await takeScreenshot(page, "inventory-after-login");
-        });
 
         await test.step("Add all products to cart from inventory", async () => {
             expectedProductsCount = await inventoryPage.getInventoryItemsCount();
