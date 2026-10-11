@@ -36,6 +36,9 @@ jobs:
     # Esta VM se destruye al terminar el job — cada run empieza limpio.
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      
     steps:
       # ----------------------------------------------------------
       # PASO 1 — Clonar el repositorio
