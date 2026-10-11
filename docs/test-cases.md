@@ -30,12 +30,12 @@ De acuerdo con el análisis funcional de SauceDemo, se identificaron los siguien
 | TC11 | Cart | Remover producto desde carrito | 🔴 Alta | ✅ Completado | ✅ Sí | Validación de remoción y actualización del cart badge |
 | TC12 | Cart | Visualizar múltiples productos en carrito | 🟠 Media | ✅ Completado | ✅ Sí | Validación de consistencia de todos los productos agregados |
 | TC13 | Cart | Remover múltiples productos desde carrito | 🟠 Media | ✅ Completado | ✅ Sí | Validación de carrito vacío tras remover todos los productos |
-| TC14 | Checkout | Checkout exitoso con un producto | 🔴 Alta | ⬜ Pendiente | ❌ No | Flujo completo de compra |
-| TC15 | Checkout | Checkout exitoso con múltiples productos | 🟠 Media | ⬜ Pendiente | ❌ No | Flujo completo con múltiples productos |
-| TC16 | Inventory | Organizar productos de A-Z | 🟡 Baja | ⬜ Pendiente | ❌ No | Validación de ordenamiento alfabético |
-| TC17 | Inventory | Organizar productos de Z-A | 🟡 Baja | ⬜ Pendiente | ❌ No | Validación de ordenamiento inverso |
-| TC18 | Inventory | Organizar productos por menor precio | 🟡 Baja | ⬜ Pendiente | ❌ No | Validación de ordenamiento ascendente |
-| TC19 | Inventory | Organizar productos por mayor precio | 🟡 Baja | ⬜ Pendiente | ❌ No | Validación de ordenamiento descendente |
+| TC14 | Checkout | Checkout exitoso con un producto | 🔴 Alta | ✅ Completado | ✅ Sí | Flujo completo: info cliente → resumen → confirmación. Validación de subtotal, impuesto (8%) y total |
+| TC15 | Checkout | Checkout exitoso con múltiples productos | 🟠 Media | ✅ Completado | ✅ Sí | Flujo completo con múltiples productos. Acumulación de precios con `reduce()`, validación de totales |
+| TC16 | Inventory | Organizar productos de A-Z | 🟡 Baja | ✅ Completado | ✅ Sí | Validación de ordenamiento alfabético ascendente |
+| TC17 | Inventory | Organizar productos de Z-A | 🟡 Baja | ✅ Completado | ✅ Sí | Validación de ordenamiento alfabético descendente |
+| TC18 | Inventory | Organizar productos por menor precio | 🟡 Baja | ✅ Completado | ✅ Sí | Validación de ordenamiento de precios ascendente |
+| TC19 | Inventory | Organizar productos por mayor precio | 🟡 Baja | ✅ Completado | ✅ Sí | Validación de ordenamiento de precios descendente |
 
 ---
 
@@ -59,6 +59,7 @@ De acuerdo con el análisis funcional de SauceDemo, se identificaron los siguien
 - Validación de cart badge
 - Validación de carrito vacío
 - Selección aleatoria de productos
+- Ordenamiento A-Z, Z-A, precio ascendente, precio descendente
 
 ### Cart
 
@@ -71,6 +72,16 @@ De acuerdo con el análisis funcional de SauceDemo, se identificaron los siguien
 - Validación de carrito vacío
 - Validación de actualización del cart badge
 
+### Checkout
+
+- Flujo completo de compra con un producto
+- Flujo completo de compra con múltiples productos
+- Llenado de información del cliente (nombre, apellido, código postal)
+- Validación de subtotal, impuesto (8%) y total en resumen de orden
+- Acumulación de precios con `Array.reduce()`
+- Confirmación de orden exitosa
+- Manejo de precisión decimal con `.toFixed(2)` + `parseFloat()`
+
 ---
 
 ## Técnicas implementadas
@@ -78,8 +89,16 @@ De acuerdo con el análisis funcional de SauceDemo, se identificaron los siguien
 - Playwright Test Runner
 - Page Object Model (POM)
 - Component Object Model (HeaderComponent)
+- Custom Fixtures (`test.extend<PageFixtures>()`) — inyección de page objects sin boilerplate
+- `storageState` — sesión autenticada reutilizada entre tests sin re-login
+- Proyecto `setup` en `playwright.config.ts` con `dependencies: ['setup']`
+- Separación de proyecto auth (sin storageState) vs proyecto autenticado
 - Data-Driven Testing
-- TypeScript Types para modelos reutilizables
+- TypeScript Types para modelos reutilizables (`InventoryProduct` con `productPrice: number`)
+- Multi-step Page Objects para flujos complejos (`CheckoutStepOnePage`, `CheckoutStepTwoPage`, `CheckoutCompletePage`)
+- Función utilitaria `parsePriceLabel()` — estilo point-free, pure function
+- Manejo de precisión decimal con `.toFixed(2)` + `parseFloat()`
+- Acumulación con `Array.reduce()` para totales multi-producto
 - Screenshots manuales adjuntos al reporte
 - Uso de `test.step()`
 - Assertions modernas de Playwright
@@ -92,6 +111,7 @@ De acuerdo con el análisis funcional de SauceDemo, se identificaron los siguien
 - Reutilización de objetos de dominio (`InventoryProduct`)
 - Automatización de escenarios individuales y masivos
 - Componentes reutilizables compartidos entre múltiples páginas
+- Reportes duales: Playwright HTML Report + Allure Report
 
 ---
 
@@ -100,33 +120,15 @@ De acuerdo con el análisis funcional de SauceDemo, se identificaron los siguien
 | Métrica | Valor |
 |---------|------:|
 | Casos de prueba definidos | **19** |
-| Casos automatizados | **13** |
-| Casos pendientes | **6** |
-| Cobertura de automatización | **68.4%** |
+| Casos automatizados | **19** |
+| Casos pendientes | **0** |
+| Cobertura de automatización | **100%** |
 
 ### Estado por funcionalidad
 
 | Feature | Estado | Cobertura |
 |---------|--------|-----------|
 | ✅ Auth | Completa | 5 / 5 |
-| ✅ Inventory | Completa | 4 / 4 |
+| ✅ Inventory | Completa | 8 / 8 |
 | ✅ Cart | Completa | 4 / 4 |
-| ⬜ Checkout | Pendiente | 0 / 2 |
-| ⬜ Inventory - Sorting | Pendiente | 0 / 4 |
-
-### Próxima funcionalidad objetivo
-
-```text
-Checkout
-```
-
-### Próximos casos de prueba
-
-| Orden | ID | Caso |
-|------:|----|------|
-| 1 | TC14 | Checkout exitoso con un producto |
-| 2 | TC15 | Checkout exitoso con múltiples productos |
-| 3 | TC16 | Organizar productos de A-Z |
-| 4 | TC17 | Organizar productos de Z-A |
-| 5 | TC18 | Organizar productos por menor precio |
-| 6 | TC19 | Organizar productos por mayor precio |
+| ✅ Checkout | Completa | 2 / 2 |

@@ -2,13 +2,14 @@
 
 <p align="center">
 
-![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright\&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript\&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=node.js\&logoColor=white)
-![Tests](https://img.shields.io/badge/Automated%20Tests-13%2F19-success)
-![Coverage](https://img.shields.io/badge/Regression%20Coverage-68.4%25-blue)
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=node.js&logoColor=white)
+![Tests](https://img.shields.io/badge/Automated%20Tests-25%2F25-success)
+![Coverage](https://img.shields.io/badge/Regression%20Coverage-100%25-brightgreen)
 ![Architecture](https://img.shields.io/badge/Architecture-POM%20%7C%20Component%20Model-orange)
-![Status](https://img.shields.io/badge/Status-In%20Progress-yellow)
+![Allure](https://img.shields.io/badge/Reports-Allure-blue)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
 </p>
 
@@ -31,6 +32,9 @@ The application under test is **SauceDemo**, which provides an excellent playgro
 * ✅ Playwright + TypeScript
 * ✅ Page Object Model (POM)
 * ✅ Component Object Model
+* ✅ Custom Playwright Fixtures with `test.extend()`
+* ✅ StorageState for session reuse across tests
+* ✅ Multi-step checkout with dedicated Page Objects per screen
 * ✅ Feature-based project organization
 * ✅ Strongly typed domain models
 * ✅ Reusable business methods
@@ -40,9 +44,10 @@ The application under test is **SauceDemo**, which provides an excellent playgro
 * ✅ Randomized test execution
 * ✅ Bulk operation support
 * ✅ Business-oriented test design
-* ✅ Rich HTML reports
-* ✅ Screenshot capture
-* ✅ Ready for CI/CD integration
+* ✅ Allure Report + Playwright HTML Report
+* ✅ Screenshot capture on every step
+* ✅ Cross-browser support (Chromium, Firefox, WebKit)
+* ✅ CI/CD ready structure
 
 ---
 
@@ -52,6 +57,7 @@ The application under test is **SauceDemo**, which provides an excellent playgro
 * TypeScript
 * Node.js
 * npm
+* Allure Report
 
 ---
 
@@ -67,12 +73,14 @@ Each page encapsulates:
 * Business actions
 * Business queries
 
-Examples:
+Pages:
 
-* LoginPage
-* InventoryPage
-* CartPage
-* CheckoutPage
+* `LoginPage`
+* `InventoryPage`
+* `CartPage`
+* `CheckoutStepOnePage`
+* `CheckoutStepTwoPage`
+* `CheckoutCompletePage`
 
 ---
 
@@ -82,9 +90,22 @@ Reusable UI components shared across pages.
 
 Current implementation:
 
-* HeaderComponent
+* `HeaderComponent`
 
 This avoids duplicating common functionality such as navigating to the shopping cart or validating the cart badge.
+
+---
+
+## Custom Fixtures
+
+Page objects are injected via `test.extend<PageFixtures>()`, eliminating boilerplate instantiation from every spec. Authentication state is saved once via `storageState` and reused across all authenticated tests — no login on every test.
+
+```typescript
+test("TC10", async ({ inventoryPage, cartPage }) => {
+    // inventoryPage is already at /inventory.html
+    // session is already authenticated
+});
+```
 
 ---
 
@@ -94,9 +115,15 @@ Business entities are represented through reusable TypeScript types.
 
 Current model:
 
-* InventoryProduct
+* `InventoryProduct` — carries `productCard`, `productName`, `productDescription`, `productPrice` (as `number`)
 
 This allows methods to exchange meaningful business objects instead of isolated primitive values.
+
+---
+
+## Price Utilities
+
+A shared `parsePriceLabel()` utility in `utils/parsers.ts` handles price string-to-number conversion across all page objects, following a functional, point-free approach.
 
 ---
 
@@ -105,19 +132,25 @@ This allows methods to exchange meaningful business objects instead of isolated 
 ```text
 project/
 │
+├── components/
+│   └── HeaderComponent.ts
+│
 ├── docs/
 │   └── test-cases.md
 │
 ├── pages/
-│   ├── components/
-│   │   └── HeaderComponent.ts
-│   │
-│   ├── LoginPage.ts
-│   ├── InventoryPage.ts
+│   ├── checkout/
+│   │   ├── CheckoutStepOnePage.ts
+│   │   ├── CheckoutStepTwoPage.ts
+│   │   └── CheckoutCompletePage.ts
 │   ├── CartPage.ts
-│   └── CheckoutPage.ts
+│   ├── InventoryPage.ts
+│   └── LoginPage.ts
 │
 ├── tests/
+│   ├── fixtures/
+│   │   ├── auth.setup.ts
+│   │   └── pages.fixture.ts
 │   └── e2e/
 │       ├── auth/
 │       ├── inventory/
@@ -128,6 +161,7 @@ project/
 │   └── InventoryProduct.ts
 │
 ├── utils/
+│   ├── parsers.ts
 │   ├── screenshot.ts
 │   └── test-data.ts
 │
@@ -138,102 +172,148 @@ project/
 
 ---
 
+# 🏛 Architecture Decision Record
+
+## Why Playwright over Selenium?
+
+| Criteria | Playwright | Selenium |
+|---|---|---|
+| Setup | Zero config, browsers bundled | Requires WebDriverManager or manual driver setup |
+| Auto-waiting | Built-in, no explicit waits needed | Manual `FluentWait` / `WebDriverWait` required |
+| Locator strategy | Semantic (`getByRole`, `getByText`) | CSS / XPath |
+| Parallelism | Native, context-level isolation | Requires Grid or manual threading |
+| TypeScript support | First-class | Via bindings, less idiomatic |
+| Trace & debugging | Built-in Trace Viewer | Third-party tooling |
+| storageState | Native session reuse | Manual cookie injection |
+
+**Playwright was chosen** because this framework targets modern web apps where speed, reliability, and developer experience matter. Selenium remains the right choice for legacy apps, Java-first teams, or environments requiring IE/Edge legacy support — which is why a parallel Selenium + Java framework is maintained in this portfolio.
+
+---
+
 # 🧪 Regression Suite Coverage
 
 ## Authentication
 
-| Test Case        | Status |
-| ---------------- | ------ |
-| Successful login | ✅      |
-| Locked user      | ✅      |
-| Invalid user     | ✅      |
-| Missing username | ✅      |
-| Missing password | ✅      |
-
----
+| ID | Test Case | Status |
+|---|---|---|
+| TC01 | Successful login | ✅ |
+| TC02 | Locked user | ✅ |
+| TC03 | Invalid user | ✅ |
+| TC04 | Missing password | ✅ |
+| TC05 | Missing username | ✅ |
 
 ## Inventory
 
-| Test Case             | Status |
-| --------------------- | ------ |
-| Add random product    | ✅      |
-| Remove random product | ✅      |
-| Add all products      | ✅      |
-| Remove all products   | ✅      |
-| Sort A-Z              | ⏳      |
-| Sort Z-A              | ⏳      |
-| Sort Low to High      | ⏳      |
-| Sort High to Low      | ⏳      |
-
----
+| ID | Test Case | Status |
+|---|---|---|
+| TC06 | Add random product | ✅ |
+| TC07 | Remove random product | ✅ |
+| TC08 | Add all products | ✅ |
+| TC09 | Remove all products | ✅ |
+| TC16 | Sort A-Z | ✅ |
+| TC17 | Sort Z-A | ✅ |
+| TC18 | Sort price low to high | ✅ |
+| TC19 | Sort price high to low | ✅ |
 
 ## Cart
 
-| Test Case                | Status |
-| ------------------------ | ------ |
-| View added product       | ✅      |
-| Remove product           | ✅      |
-| View multiple products   | ✅      |
-| Remove multiple products | ✅      |
-
----
+| ID | Test Case | Status |
+|---|---|---|
+| TC10 | View added product | ✅ |
+| TC11 | Remove product | ✅ |
+| TC12 | View multiple products | ✅ |
+| TC13 | Remove multiple products | ✅ |
 
 ## Checkout
 
-| Test Case                       | Status |
-| ------------------------------- | ------ |
-| Checkout with one product       | ⏳      |
-| Checkout with multiple products | ⏳      |
+| ID | Test Case | Status |
+|---|---|---|
+| TC14 | Checkout with one product | ✅ |
+| TC15 | Checkout with multiple products | ✅ |
 
 ---
 
-# 📊 Current Progress
+# 📊 Coverage Summary
 
-| Metric             | Value |
-| ------------------ | ----: |
-| Planned Test Cases |    19 |
-| Automated          |    13 |
-| Progress           | 68.4% |
+| Metric | Value |
+|---|---:|
+| Planned Test Cases | 25 |
+| Automated | 25 |
+| Coverage | 100% |
+| Browsers | Chromium · Firefox · WebKit |
 
 ---
 
 # ✅ Automation Techniques Implemented
 
-* Page Object Model
+* Page Object Model (POM)
 * Component Object Model
+* Custom Playwright fixtures (`test.extend()`)
+* StorageState for session reuse
+* Multi-step checkout with dedicated Page Objects
 * Strong typing with TypeScript
-* Business object modeling
+* Business object modeling (`InventoryProduct`)
 * Reusable business methods
 * Dynamic locators
 * Scoped locators
-* Semantic locators
-* Data-driven approach
+* Semantic locators (`getByRole`, `getByText`, `getByPlaceholder`)
+* Data-driven approach (`users`, `customer` in `test-data.ts`)
 * Randomized test execution
 * Bulk operations
 * Assertions with Playwright
 * `test.step()` organization
-* Manual screenshots
+* Manual screenshots on every step
 * Business-oriented validations
+* Price calculation validation (subtotal + tax = total)
+* Functional utilities (`parsePriceLabel`, point-free style)
+
+---
+
+# 🚫 Anti-Patterns Avoided
+
+* XPath abuse
+* Fragile selectors
+* Static waits (`waitForTimeout`)
+* Test dependencies
+* Login repetition on every test
+* Monolithic checkout page object
+* Logic inside test cases
+* Duplicated locators
+* Hardcoded test data
+* Shared mutable state
 
 ---
 
 # 📸 Reporting
 
-The framework generates Playwright HTML reports.
+The framework generates both **Allure Report** and **Playwright HTML Report**.
 
-Run:
+## Allure Report
 
 ```bash
-npx playwright show-report
+npm run allure:generate
+npm run allure:open
 ```
 
-Reports include:
+Or serve results directly:
 
-* Test execution summary
-* Execution time
-* Failure details
-* Stack traces
-* Attached screenshots
+```bash
+npm run allure:serve
+```
+
+Includes:
+
+* Test execution summary with pass/fail metrics
+* Step-by-step visual timeline
+* Screenshots attached per step
+* Suite and behavior views
+* Historical trend (when run in CI)
+
+## Playwright HTML Report
+
+```bash
+npm run test:report
+```
 
 ---
 
@@ -244,8 +324,6 @@ Reports include:
 ```bash
 npm install
 ```
-
----
 
 ## Install browsers
 
@@ -260,10 +338,14 @@ npx playwright install
 ## Execute all tests
 
 ```bash
-npx playwright test
+npm run test
 ```
 
----
+## Execute a specific browser
+
+```bash
+npm run test:chromium
+```
 
 ## Execute a specific feature
 
@@ -271,21 +353,11 @@ npx playwright test
 npx playwright test tests/e2e/inventory
 ```
 
----
-
 ## Execute a specific test
 
 ```bash
 npx playwright test -g "TC08"
 ```
-
-or
-
-```bash
-npx playwright test -g "Add all products"
-```
-
----
 
 ## Execute in UI Mode
 
@@ -293,15 +365,11 @@ npx playwright test -g "Add all products"
 npx playwright test --ui
 ```
 
----
-
 ## Execute in headed mode
 
 ```bash
 npx playwright test --headed
 ```
-
----
 
 ## Debug a test
 
@@ -319,44 +387,6 @@ Business test cases are documented in:
 docs/test-cases.md
 ```
 
-Including:
-
-* Functional area
-* Priority
-* Execution status
-* Automation status
-* Notes
-
----
-
-# ✅ Best Practices Applied
-
-* No hardcoded waits
-* Explicit business methods
-* Separation of actions and validations
-* Minimal code duplication
-* Reusable components
-* Strong typing
-* Clear naming conventions
-* Semantic locators
-* Dynamic locator strategies
-* Business-oriented test scenarios
-* Independent tests
-* Parallel execution ready
-
----
-
-# 🚫 Anti-Patterns Avoided
-
-* XPath abuse
-* Fragile selectors
-* Static waits (`waitForTimeout`)
-* Test dependencies
-* Logic inside test cases
-* Duplicated locators
-* Hardcoded test data
-* Shared mutable state
-
 ---
 
 # 🏢 Enterprise Alignment
@@ -371,27 +401,25 @@ This project follows practices commonly found in enterprise automation framework
 * Maintainable Page Objects
 * Scalable project organization
 * CI/CD ready structure
+* Session management via storageState
+* Functional utilities
 
 ---
 
 # 🚀 Roadmap
 
-Upcoming improvements include:
-
-* Checkout automation
-* Inventory sorting validation
-* Custom Playwright fixtures
-* API testing integration
-* Environment configuration
-* GitHub Actions pipeline
-* Azure DevOps pipeline
-* Docker execution
-* Cross-browser pipeline
-* Parallel execution optimization
-* Code coverage metrics
-* Allure reporting
-* Test tagging strategy
-* Smoke and Regression suites
+* ✅ Authentication automation
+* ✅ Inventory automation
+* ✅ Cart automation
+* ✅ Checkout automation
+* ✅ Inventory sorting validation
+* ✅ Custom Playwright fixtures
+* ✅ Allure reporting
+* ⏳ GitHub Actions pipeline
+* ⏳ Docker execution
+* ⏳ Cross-browser pipeline in CI
+* ⏳ Test tagging strategy (smoke / regression)
+* ⏳ Environment configuration (.env)
 
 ---
 
