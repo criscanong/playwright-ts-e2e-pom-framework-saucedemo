@@ -138,16 +138,19 @@ jobs:
         run: npm run allure:generate
 
       # ----------------------------------------------------------
-      # PASO 8 — Subir Allure Report como artifact
-      # Mismo principio que el paso 6. El Allure Report es más rico
-      # que el HTML de Playwright: muestra tendencias históricas,
-      # categorías de fallo, duración por suite, y es el estándar
-      # de la industria para reportes de QA en equipos grandes.
+      # PASO 8 — Publicar Allure Report en GitHub Pages
+      # peaceiris/actions-gh-pages toma la carpeta allure-report/
+      # y la despliega en la rama gh-pages del repo.
+      # GitHub Pages sirve esa rama como sitio web estático en:
+      #   https://<usuario>.github.io/<repo>/
+      # GITHUB_TOKEN es un token temporal que GitHub inyecta
+      # automáticamente en cada run — no requiere configuración.
+      # Con `if: always()` el reporte se publica incluso si los
+      # tests fallaron, que es cuando más se necesita consultarlo.
       # ----------------------------------------------------------
-      - name: Upload Allure report
+      - name: Deploy Allure report to GitHub Pages
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: allure-report
-          path: allure-report/
-          retention-days: 30
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
