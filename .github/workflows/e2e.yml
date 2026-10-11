@@ -1,0 +1,153 @@
+# ============================================================
+# E2E Test Pipeline — SauceDemo Playwright Framework
+# ============================================================
+# GitHub Actions lee este archivo automáticamente cuando detecta
+# un evento (push, pull_request) en las ramas configuradas.
+# Crea un "runner" (máquina virtual Linux en los servidores de
+# GitHub), clona el repo ahí, y ejecuta los steps en orden.
+# ============================================================
+
+name: E2E Tests
+
+# ------------------------------------------------------------
+# Eventos que disparan el pipeline.
+# push: cada vez que subes código a main o develop.
+# pull_request: cada vez que alguien abre o actualiza un PR
+# apuntando a main o develop. Así los tests corren ANTES de
+# mergear, no después.
+# ------------------------------------------------------------
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ------------------------------------------------------------
+  # Un "job" es una unidad de trabajo que corre en su propia
+  # máquina virtual. Si tuvieras múltiples jobs (ej: chromium +
+  # firefox) correrían en paralelo en máquinas separadas.
+  # ------------------------------------------------------------
+  test:
+    name: Playwright E2E (Chromium)
+
+    # Sistema operativo de la máquina virtual que GitHub aprovisiona.
+    # ubuntu-latest es el más rápido y económico para Playwright.
+    # Esta VM se destruye al terminar el job — cada run empieza limpio.
+    runs-on: ubuntu-latest
+
+    steps:
+      # ----------------------------------------------------------
+      # PASO 1 — Clonar el repositorio
+      # La VM de GitHub arranca vacía. Este paso descarga el código
+      # del repo (la rama que disparó el evento) dentro de la VM.
+      # Sin este paso, los siguientes no tienen nada con qué trabajar.
+      # ----------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ----------------------------------------------------------
+      # PASO 2 — Instalar Node.js
+      # La VM de ubuntu-latest tiene Node preinstalado, pero la
+      # versión puede variar entre runners. Fijar node-version: 20
+      # garantiza reproducibilidad.
+      # cache: 'npm' le dice a GitHub que guarde la carpeta
+      # node_modules entre runs. Si package-lock.json no cambió,
+      # el próximo run restaura el caché en segundos en lugar de
+      # descargar todo de nuevo.
+      # ----------------------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # ----------------------------------------------------------
+      # PASO 3 — Instalar dependencias del proyecto
+      # `npm ci` (clean install) es la versión de CI de `npm install`.
+      # Diferencias clave:
+      #   - Lee package-lock.json y respeta versiones exactas.
+      #   - Borra node_modules antes de instalar (reproducible).
+      #   - Falla si package-lock.json no está sincronizado con
+      #     package.json, lo que detecta errores de versionado.
+      # Nunca usar `npm install` en CI — puede actualizar versiones
+      # y romper el pipeline de forma silenciosa.
+      # ----------------------------------------------------------
+      - name: Install dependencies
+        run: npm ci
+
+      # ----------------------------------------------------------
+      # PASO 4 — Descargar Playwright y sus dependencias del sistema
+      # Playwright necesita dos cosas:
+      #   1. El binario del browser (Chromium en este caso).
+      #   2. Librerías del sistema operativo que el browser necesita
+      #      (libglib, libnss, libatk, etc.) — `--with-deps` las
+      #      instala vía apt-get automáticamente.
+      # Solo descargamos Chromium porque Firefox y WebKit están
+      # comentados en playwright.config.ts. Descargar los tres
+      # agregaría ~600MB y ~2 minutos innecesarios al pipeline.
+      # ----------------------------------------------------------
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      # ----------------------------------------------------------
+      # PASO 5 — Ejecutar el suite completo
+      # Corre `npx playwright test` tal como está definido en el
+      # script "test" de package.json.
+      # Playwright detecta process.env.CI=true (GitHub lo setea
+      # automáticamente) y aplica la configuración de CI definida
+      # en playwright.config.ts:
+      #   - retries: 2 (reintenta tests fallidos hasta 2 veces)
+      #   - workers: 1 (un test a la vez — evita race conditions
+      #     en ambientes con recursos limitados)
+      #   - forbidOnly: true (falla si hay test.only olvidado)
+      # El proyecto "setup" (auth.setup.ts) corre primero y genera
+      # playwright/.auth/user.json antes de los tests autenticados.
+      # ----------------------------------------------------------
+      - name: Run E2E tests
+        run: npm test
+
+      # ----------------------------------------------------------
+      # PASO 6 — Subir Playwright HTML Report como artifact
+      # `if: always()` es crítico: sube el reporte INCLUSO si los
+      # tests fallaron. Sin esto, solo tendrías el reporte cuando
+      # todo pasa — justo cuando no lo necesitas.
+      # El artifact queda disponible en la pestaña "Actions" del
+      # repo en GitHub para descargarlo y abrirlo localmente.
+      # retention-days: 30 — GitHub lo borra automáticamente
+      # después de 30 días para no consumir storage indefinidamente.
+      # ----------------------------------------------------------
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 5
+
+      # ----------------------------------------------------------
+      # PASO 7 — Generar Allure Report
+      # `npm run allure:generate` ejecuta:
+      #   allure generate allure-results --clean -o allure-report
+      # allure-results/ lo genera el reporter allure-playwright
+      # durante el paso 5. Este paso lo convierte en HTML navegable.
+      # También usa `if: always()` para generarse aunque haya fallos.
+      # ----------------------------------------------------------
+      - name: Generate Allure report
+        if: always()
+        run: npm run allure:generate
+
+      # ----------------------------------------------------------
+      # PASO 8 — Subir Allure Report como artifact
+      # Mismo principio que el paso 6. El Allure Report es más rico
+      # que el HTML de Playwright: muestra tendencias históricas,
+      # categorías de fallo, duración por suite, y es el estándar
+      # de la industria para reportes de QA en equipos grandes.
+      # ----------------------------------------------------------
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/
+          retention-days: 30
