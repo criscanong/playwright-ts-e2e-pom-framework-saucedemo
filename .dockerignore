@@ -1,0 +1,23 @@
+# Dependencias — se instalan dentro del contenedor via npm ci
+node_modules
+
+# Reportes generados — se montan como volumen al correr el contenedor
+playwright-report
+allure-results
+allure-report
+test-results
+
+# Sesión de autenticación — se genera dentro del contenedor en runtime
+playwright/.auth
+
+# Control de versiones
+.git
+.gitignore
+
+# Configuración de editores
+.vscode
+.idea
+
+# Variables de entorno locales
+.env
+.env.local
