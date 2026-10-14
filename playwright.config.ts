@@ -52,7 +52,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
-    /*
+    
     {
       name: 'firefox',
       use: { 
@@ -70,7 +70,7 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
-    */
+    
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
